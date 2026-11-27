@@ -6,15 +6,41 @@ Mobilna kolekcjonerska gra karciana (TCG) w świecie fantasy. Ten katalog zawier
 
 | Ścieżka | Co zawiera |
 | --- | --- |
-| `src/RozdarteKrainy.Engine` | silnik zasad w C# (.NET 8), bez zależności od Unity |
+| `src/RozdarteKrainy.Engine` | silnik zasad w C# (.NET 8), bez zależności od Unity, z prostym botem |
+| `src/RozdarteKrainy.Cli` | gra w terminalu przeciw botowi i symulacja bot kontra bot |
 | `src/RozdarteKrainy.Engine/Data/cards.json` | wszystkie karty z prototypu (Zakon Płomienia, Leśny Krąg) |
 | `src/RozdarteKrainy.Engine/Data/decks.json` | dwie talie startowe po 30 kart |
 | `tests/RozdarteKrainy.Engine.Tests` | testy zasad (xUnit) |
 | `.github/workflows/ci.yml` | automatyczne testy na GitHubie przy każdym pushu |
 
-## Uruchomienie testów
+## Zagraj w terminalu
 
 Wymaga [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0).
+
+```
+dotnet run --project src/RozdarteKrainy.Cli
+```
+
+Wybierasz talię, a bot dostaje drugą. Najważniejsze komendy (pełna lista pod `?` w grze):
+
+| Komenda | Co robi |
+| --- | --- |
+| `z 0 LF` | zagraj kartę 0 z ręki na lewy Front (L/S/P = ścieżka, F/T = Front/Tyły) |
+| `z 2 !SF` | zaklęcie na jednostkę rywala na środkowym Froncie |
+| `r LF SF` | przesuń jednostkę (1 Esencja) |
+| `m !tw` | moc Bohatera w Twierdzę rywala |
+| `k` | koniec tury |
+
+## Symulacja balansu
+
+```
+dotnet run --project src/RozdarteKrainy.Cli -- --symulacja 500
+```
+
+Rozgrywa 500 partii bot kontra bot i podaje procent zwycięstw talii, przewagę zaczynającego,
+długość partii i sposoby zwycięstwa.
+
+## Uruchomienie testów
 
 ```
 dotnet test tests/RozdarteKrainy.Engine.Tests/RozdarteKrainy.Engine.Tests.csproj
