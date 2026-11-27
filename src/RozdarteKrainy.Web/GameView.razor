@@ -1,0 +1,510 @@
+@* Ekran gry: wybór talii, wymiana kart, plansza, ręka. Cała logika zasad jest w silniku. *@
+
+@if (_game is null)
+{
+    <div class="menu">
+        <h1 class="logo">Rozdarte Krainy</h1>
+        <p class="tagline">Trzy ścieżki. Trzy Kamienie Mocy. Zburz Twierdzę rywala albo przejmij wszystkie Kamienie.</p>
+        <div class="deck-pick">
+            <button class="deck fac-FlameOrder" @onclick='() => StartGame("zakon-plomienia", "lesny-krag")'>
+                <span class="deck-emblem">@((MarkupString)Emblem(Faction.FlameOrder))</span>
+                <span class="deck-name">Zakon Płomienia</span>
+                <span class="deck-desc">Szarża, ogień, obrażenia w Twierdzę</span>
+            </button>
+            <button class="deck fac-ForestCircle" @onclick='() => StartGame("lesny-krag", "zakon-plomienia")'>
+                <span class="deck-emblem">@((MarkupString)Emblem(Faction.ForestCircle))</span>
+                <span class="deck-name">Leśny Krąg</span>
+                <span class="deck-desc">Wzrost, Straż, kontrola Kamieni</span>
+            </button>
+        </div>
+        <p class="hint">Grasz przeciw botowi. Wersja testowa, grafiki zastępcze.</p>
+    </div>
+    return;
+}
+
+@{
+    var s = _game.State;
+    var me = s.Players[Human];
+    var foe = s.Players[Bot];
+    var myTurn = s.Phase == GamePhase.Actions && s.ActivePlayer == Human && !_botThinking;
+}
+
+@if (s.Phase == GamePhase.Mulligan)
+{
+    <div class="menu">
+        <h2 class="logo small">Ręka startowa</h2>
+        <p class="tagline">@(s.FirstPlayer == Human ? "Zaczynasz ty." : "Zaczyna bot. Dostajesz piątą kartę i Iskrę (+1 Esencji raz w partii).")
+            Dotknij karty, które chcesz wymienić.</p>
+        <div class="hand mulligan">
+            @for (var i = 0; i < me.Hand.Count; i++)
+            {
+                var idx = i;
+                <div class="card-slot @(_mulligan.Contains(idx) ? "swap" : "")" @onclick="() => ToggleMulligan(idx)">
+                    @CardFace(me.Hand[idx], true)
+                </div>
+            }
+        </div>
+        <button class="btn primary" @onclick="ConfirmMulligan">@(_mulligan.Count == 0 ? "Zostaw i graj" : $"Wymień {_mulligan.Count} i graj")</button>
+    </div>
+    return;
+}
+
+<div class="table">
+    <div class="hero-bar foe @(Hint(Target.Fortress(Bot)) ? "target" : "") @(_shakeFoe ? "shake" : "")" @onclick="() => ClickFortress(Bot)">
+        <span class="hero-emblem">@((MarkupString)Emblem(foe.Hero.Faction))</span>
+        <span class="hero-name">@foe.Hero.Name</span>
+        <span class="fortress" title="Twierdza">@foe.Fortress</span>
+        <span class="meta">ręka @foe.Hand.Count · talia @foe.Deck.Count</span>
+    </div>
+
+    <div class="board">
+        @BoardRow(foe, Row.Back)
+        @BoardRow(foe, Row.Front)
+        <div class="stones">
+            @for (var lane = 0; lane < Rules.Lanes; lane++)
+            {
+                var owner = s.Stones[lane];
+                var land = s.Lands[lane];
+                <div class="stone-cell">
+                    <div class="stone @(owner == Human ? "mine" : owner == Bot ? "theirs" : "")" title="Kamień Mocy">◆</div>
+                    @if (land is not null)
+                    {
+                        <div class="land" title="@land.Text">@land.Name</div>
+                    }
+                </div>
+            }
+        </div>
+        @BoardRow(me, Row.Front)
+        @BoardRow(me, Row.Back)
+    </div>
+
+    <div class="hero-bar me @(Hint(Target.Fortress(Human)) ? "target" : "") @(_shakeMe ? "shake" : "")" @onclick="() => ClickFortress(Human)">
+        <span class="hero-emblem">@((MarkupString)Emblem(me.Hero.Faction))</span>
+        <span class="hero-name">@me.Hero.Name</span>
+        <span class="fortress" title="Twierdza">@me.Fortress</span>
+        <span class="essence" title="Esencja">@me.Essence</span>
+    </div>
+
+    <div class="status">
+        @if (s.IsOver)
+        {
+            <span class="result">@(s.IsDraw ? "Remis" : s.Winner == Human ? "Zwycięstwo!" : "Porażka") · @ReasonName(s.WinReason)</span>
+        }
+        else if (_botThinking)
+        {
+            <span>Tura bota…</span>
+        }
+        else if (_message is not null)
+        {
+            <span class="error">@_message</span>
+        }
+        else
+        {
+            <span>@Prompt()</span>
+        }
+    </div>
+
+    <div class="hand">
+        @for (var i = 0; i < me.Hand.Count; i++)
+        {
+            var idx = i;
+            var card = me.Hand[idx];
+            <div class="card-slot @(_selectedHand == idx && !_fromVoid ? "selected" : "") @(card.Cost > me.Essence ? "dim" : "")"
+                 @onclick="() => ClickHand(idx, false)">
+                @CardFace(card, false)
+            </div>
+        }
+        @for (var i = 0; i < me.Void.Count; i++)
+        {
+            var idx = i;
+            var card = me.Void[idx];
+            if (card.EchoCost is null) continue;
+            <div class="card-slot echo @(_selectedHand == idx && _fromVoid ? "selected" : "")" @onclick="() => ClickHand(idx, true)">
+                <div class="echo-tag">Echo @card.EchoCost</div>
+                @CardFace(card, false)
+            </div>
+        }
+    </div>
+
+    <div class="actions">
+        <button class="btn" disabled="@(!myTurn || me.HeroPowerUsed || me.Essence < Rules.HeroPowerCost)"
+                @onclick="ToggleHeroPower" title="@me.Hero.Text">
+            @(_heroMode ? "Anuluj moc" : $"Moc Bohatera ({Rules.HeroPowerCost})")
+        </button>
+        @if (me.HasSpark)
+        {
+            <button class="btn" disabled="@(!myTurn)" @onclick="UseSpark">Iskra +1</button>
+        }
+        @if (s.IsOver)
+        {
+            <button class="btn primary" @onclick="NewGame">Nowa partia</button>
+        }
+        else
+        {
+            <button class="btn primary" disabled="@(!myTurn)" @onclick="EndTurn">Koniec tury</button>
+        }
+    </div>
+
+    <details class="log">
+        <summary>Dziennik partii i zasady</summary>
+        <ul>
+            @foreach (var line in s.Log.TakeLast(14).Reverse())
+            {
+                <li>@Pretty(line)</li>
+            }
+        </ul>
+        <p class="rules">Dotknij karty w ręce, potem pola albo celu. Dotknij swojej jednostki, potem sąsiedniego pola, by ją przesunąć (1 Esencja).
+            Koniec tury: jednostki z Frontu atakują pole naprzeciwko, a gdy ścieżka rywala jest pusta, uderzają w Twierdzę.
+            W Zmierzchu przejmujesz Kamień, jeśli masz kogoś na Froncie, a rywal nie.
+            Wygrywa zburzenie Twierdzy albo trzy Kamienie w twoim Świcie.</p>
+    </details>
+</div>
+
+@code {
+    private const int Human = 0;
+    private const int Bot = 1;
+
+    private readonly CardLibrary _lib = CardLibrary.LoadDefault();
+    private Game? _game;
+    private string _humanDeck = "zakon-plomienia";
+    private string _botDeck = "lesny-krag";
+    private readonly HashSet<int> _mulligan = new();
+
+    private int? _selectedHand;
+    private bool _fromVoid;
+    private readonly List<Target> _args = new();
+    private Position? _selectedUnit;
+    private bool _heroMode;
+    private bool _botThinking;
+    private string? _message;
+    private bool _shakeMe;
+    private bool _shakeFoe;
+
+    // ------------------------------------------------------------------ przebieg
+
+    private void StartGame(string human, string bot)
+    {
+        _humanDeck = human;
+        _botDeck = bot;
+        _game = Game.Create(_lib, human, bot, Environment.TickCount);
+        _mulligan.Clear();
+        ClearSelection();
+    }
+
+    private void NewGame() => _game = null;
+
+    private void ToggleMulligan(int index)
+    {
+        if (!_mulligan.Remove(index)) _mulligan.Add(index);
+    }
+
+    private async Task ConfirmMulligan()
+    {
+        if (_game is null) return;
+        if (_mulligan.Count > 0) _game.Mulligan(Human, _mulligan.ToList());
+        _game.Begin();
+        await RunBot();
+    }
+
+    private async Task EndTurn()
+    {
+        if (_game is null) return;
+        ClearSelection();
+        var before = (_game.State.Players[Human].Fortress, _game.State.Players[Bot].Fortress);
+        Show(_game.EndTurn());
+        await Shake(before);
+        await RunBot();
+    }
+
+    private async Task RunBot()
+    {
+        if (_game is null) return;
+        while (!_game.State.IsOver && _game.State.Phase == GamePhase.Actions && _game.State.ActivePlayer == Bot)
+        {
+            _botThinking = true;
+            StateHasChanged();
+            await Task.Delay(650);
+            var before = (_game.State.Players[Human].Fortress, _game.State.Players[Bot].Fortress);
+            SimpleBot.PlayTurn(_game);
+            _botThinking = false;
+            await Shake(before);
+        }
+        _botThinking = false;
+    }
+
+    private async Task Shake((int Me, int Foe) before)
+    {
+        if (_game is null) return;
+        _shakeMe = _game.State.Players[Human].Fortress < before.Me;
+        _shakeFoe = _game.State.Players[Bot].Fortress < before.Foe;
+        if (!_shakeMe && !_shakeFoe) return;
+        StateHasChanged();
+        await Task.Delay(450);
+        _shakeMe = _shakeFoe = false;
+    }
+
+    // ------------------------------------------------------------------ kliknięcia
+
+    private bool MyTurn => _game is { } g && g.State.Phase == GamePhase.Actions && g.State.ActivePlayer == Human && !_botThinking;
+
+    private void ClickHand(int index, bool fromVoid)
+    {
+        if (!MyTurn || _game is null) return;
+        if (_selectedHand == index && _fromVoid == fromVoid)
+        {
+            ClearSelection();
+            return;
+        }
+        ClearSelection();
+        _selectedHand = index;
+        _fromVoid = fromVoid;
+        if (CardTargeting.RequiredArgs(SelectedCard!) == 0) TryPlay();
+    }
+
+    private void ClickCell(int player, Position pos)
+    {
+        if (!MyTurn || _game is null) return;
+        _message = null;
+        var target = new Target(player, pos);
+
+        if (_heroMode)
+        {
+            Show(_game.UseHeroPower(target));
+            ClearSelection();
+            return;
+        }
+        if (SelectedCard is { } card)
+        {
+            _args.Add(target);
+            if (_args.Count >= CardTargeting.RequiredArgs(card)) TryPlay();
+            return;
+        }
+        if (player == Human)
+        {
+            var me = _game.State.Players[Human];
+            if (me.At(pos) is not null)
+            {
+                _selectedUnit = _selectedUnit == pos ? null : pos;
+                return;
+            }
+            if (_selectedUnit is { } from)
+            {
+                Show(_game.MoveUnit(from, pos));
+                _selectedUnit = null;
+            }
+        }
+    }
+
+    private void ClickFortress(int player)
+    {
+        if (!MyTurn || _game is null) return;
+        var target = Target.Fortress(player);
+        if (_heroMode)
+        {
+            Show(_game.UseHeroPower(target));
+            ClearSelection();
+            return;
+        }
+        if (SelectedCard is { } card)
+        {
+            _args.Add(target);
+            if (_args.Count >= CardTargeting.RequiredArgs(card)) TryPlay();
+        }
+    }
+
+    private void ToggleHeroPower()
+    {
+        var on = !_heroMode;
+        ClearSelection();
+        _heroMode = on;
+    }
+
+    private void UseSpark()
+    {
+        if (_game is null) return;
+        Show(_game.UseSpark());
+    }
+
+    private void TryPlay()
+    {
+        if (_game is null || _selectedHand is not { } index || SelectedCard is not { } card) return;
+        var (placement, target) = CardTargeting.Map(card, _args, Human);
+        var result = _fromVoid ? _game.PlayFromVoid(index, placement, target) : _game.PlayCard(index, placement, target);
+        ClearSelection();
+        Show(result);
+    }
+
+    private CardDefinition? SelectedCard
+    {
+        get
+        {
+            if (_game is null || _selectedHand is not { } i) return null;
+            var list = _fromVoid ? _game.State.Players[Human].Void : _game.State.Players[Human].Hand;
+            return i >= 0 && i < list.Count ? list[i] : null;
+        }
+    }
+
+    private void ClearSelection()
+    {
+        _selectedHand = null;
+        _fromVoid = false;
+        _args.Clear();
+        _selectedUnit = null;
+        _heroMode = false;
+    }
+
+    private void Show(ActionResult result) => _message = result.Ok ? null : result.Error;
+
+    // ------------------------------------------------------------------ podpowiedzi
+
+    private string Prompt()
+    {
+        if (_heroMode) return "Wskaż cel mocy Bohatera.";
+        if (SelectedCard is { } card)
+        {
+            if (card.Type == CardType.Unit) return $"{card.Name}: wskaż swoje wolne pole.";
+            if (card.Type == CardType.Land) return $"{card.Name}: wskaż ścieżkę.";
+            if (card.Type == CardType.Artifact) return $"{card.Name}: wskaż swoją jednostkę.";
+            if (card.OnPlay.FirstOrDefault()?.Type == EffectType.RelocateEnemyUnitAndDraw)
+                return _args.Count == 0 ? "Wskaż wrogą jednostkę." : "Wskaż jej nowe, wolne pole na innej ścieżce.";
+            return $"{card.Name}: {card.Text}";
+        }
+        if (_selectedUnit is not null) return "Wskaż sąsiednie wolne pole, by przesunąć (1 Esencja).";
+        return "Twoja tura. Zagraj kartę albo zakończ turę.";
+    }
+
+    private bool Hint(Target t)
+    {
+        if (_game is null || !MyTurn) return false;
+        var s = _game.State;
+        var unit = t.Position is { } p ? s.Players[t.Player].At(p) : null;
+
+        if (_heroMode)
+        {
+            return s.Players[Human].Hero.HeroPower == HeroPowerType.FlameStrike
+                ? (t.Player == Bot && (t.IsFortress || unit is not null)) || (t.Player == Human && unit is not null)
+                : t.Player == Human && unit is not null;
+        }
+        if (SelectedCard is { } card)
+        {
+            switch (card.Type)
+            {
+                case CardType.Unit: return t.Player == Human && !t.IsFortress && unit is null;
+                case CardType.Land: return !t.IsFortress && t.Player == Human && t.Position!.Value.Row == Row.Front;
+                case CardType.Artifact: return t.Player == Human && unit is not null;
+            }
+            var effect = card.OnPlay.FirstOrDefault()?.Type;
+            return effect switch
+            {
+                EffectType.DamageUnit => unit is not null,
+                EffectType.BuffUnit => t.Player == Human && unit is not null,
+                EffectType.RootUnit => t.Player == Bot && unit is not null,
+                EffectType.DamageEnemiesInLane => t.Player == Bot && !t.IsFortress,
+                EffectType.HealUnitOrOwnFortress => t.Player == Human && (t.IsFortress || unit is not null),
+                EffectType.RelocateEnemyUnitAndDraw => t.Player == Bot && !t.IsFortress && (_args.Count == 0 ? unit is not null : unit is null),
+                _ => false,
+            };
+        }
+        if (_selectedUnit is { } from && t.Player == Human && t.Position is { } to && unit is null)
+        {
+            return (from.Lane == to.Lane && from.Row != to.Row) || (Math.Abs(from.Lane - to.Lane) == 1 && from.Row == to.Row);
+        }
+        return false;
+    }
+
+    // ------------------------------------------------------------------ rysowanie
+
+    private RenderFragment BoardRow(PlayerState p, Row row) => __builder =>
+    {
+        <div class="row @(p.Index == Human ? "mine" : "theirs") @(row == Row.Front ? "front" : "back")">
+            @for (var lane = 0; lane < Rules.Lanes; lane++)
+            {
+                var pos = new Position(lane, row);
+                var unit = p.At(pos);
+                var player = p.Index;
+                var selected = player == Human && _selectedUnit == pos;
+                <div class="cell @(Hint(new Target(player, pos)) ? "target" : "") @(selected ? "selected" : "")"
+                     @onclick="() => ClickCell(player, pos)">
+                    @if (unit is null)
+                    {
+                        <span class="cell-label">@(row == Row.Front ? "Front" : "Tyły")</span>
+                    }
+                    else
+                    {
+                        @UnitFace(unit, lane)
+                    }
+                </div>
+            }
+        </div>
+    };
+
+    private RenderFragment UnitFace(Unit u, int lane) => __builder =>
+    {
+        var hp = _game!.State.RemainingHealth(u, lane);
+        var hurt = u.Damage > 0;
+        <div class="unit fac-@u.Card.Faction @(u.SummoningSick ? "sick" : "") @(u.Rooted ? "rooted" : "")" @key="u.Uid" title="@u.Card.Text">
+            <div class="unit-name">@u.Card.Name</div>
+            <div class="unit-kw">@Keywords(u.Keywords)</div>
+            <div class="unit-stats">
+                <span class="atk">@u.Attack</span>
+                <span class="hp @(hurt ? "hurt" : "")">@hp</span>
+            </div>
+        </div>
+    };
+
+    private RenderFragment CardFace(CardDefinition c, bool large) => __builder =>
+    {
+        <div class="card fac-@c.Faction rar-@c.Rarity @(large ? "large" : "")">
+            <div class="card-cost">@c.Cost</div>
+            <div class="card-name">@c.Name</div>
+            <div class="card-art">@((MarkupString)Emblem(c.Faction))<span class="card-type">@TypeName(c.Type)</span></div>
+            <div class="card-text">@c.Text</div>
+            @if (c.Type == CardType.Unit)
+            {
+                <div class="card-stats"><span class="atk">@c.Attack</span><span class="hp">@c.Health</span></div>
+            }
+        </div>
+    };
+
+    private static string Keywords(IEnumerable<Keyword> keywords) => string.Join(" ", keywords.Select(k => k switch
+    {
+        Keyword.Charge => "Szarża",
+        Keyword.Guard => "Straż",
+        Keyword.Ranged => "Zasięg",
+        Keyword.Stealth => "Ukrycie",
+        Keyword.Pierce => "Przebicie",
+        Keyword.StoneWarden => "Strażnik",
+        _ => "",
+    }));
+
+    private static string TypeName(CardType type) => type switch
+    {
+        CardType.Unit => "Jednostka",
+        CardType.Spell => "Zaklęcie",
+        CardType.Artifact => "Artefakt",
+        CardType.Land => "Kraina",
+        _ => "Bohater",
+    };
+
+    private static string ReasonName(WinReason? reason) => reason switch
+    {
+        WinReason.Demolition => "Twierdza zburzona",
+        WinReason.Dominance => "Dominacja trzech Kamieni",
+        WinReason.TurnLimit => "limit tur",
+        _ => "",
+    };
+
+    private static string Pretty(string line) => line
+        .Replace("Gracz 0", "Ty").Replace("gracza 0", "twoja").Replace("gracz 0", "ty")
+        .Replace("Gracz 1", "Bot").Replace("gracza 1", "bota").Replace("gracz 1", "bot");
+
+    private static string Emblem(Faction faction) => faction switch
+    {
+        Faction.FlameOrder =>
+            "<svg viewBox='0 0 40 40' class='emblem'><path d='M20 4c3 7 10 10 10 19a10 10 0 0 1-20 0c0-5 3-8 5-11 0 4 2 6 4 6-2-5 0-10 1-14z' fill='currentColor'/></svg>",
+        Faction.ForestCircle =>
+            "<svg viewBox='0 0 40 40' class='emblem'><path d='M20 4C10 10 7 19 9 27c2 6 7 9 11 9s9-3 11-9c2-8-1-17-11-23zm0 6v26' fill='currentColor' stroke='rgba(0,0,0,.35)' stroke-width='1.5'/></svg>",
+        _ =>
+            "<svg viewBox='0 0 40 40' class='emblem'><path d='M20 4l14 16-14 16L6 20z' fill='currentColor'/></svg>",
+    };
+}
