@@ -1,0 +1,46 @@
+{
+  "zakon-plomienia": {
+    "name": "Zakon Płomienia",
+    "hero": "kaplanka-ignara",
+    "cards": {
+      "giermek-zakonu": 2,
+      "plomienny-zwiadowca": 2,
+      "lucznik-zaru": 2,
+      "tarczownik-zakonu": 2,
+      "iskra-gniewu": 2,
+      "sztandar-zakonu": 2,
+      "jezdziec-pozogi": 2,
+      "kaplan-ognia": 2,
+      "straznik-bramy": 2,
+      "wezwanie-do-szturmu": 2,
+      "pole-zgliszcz": 2,
+      "ognista-fala": 2,
+      "paladyn-brzasku": 2,
+      "taran-oblezniczy": 2,
+      "feniks-zakonu": 1,
+      "arcymistrz-solen": 1
+    }
+  },
+  "lesny-krag": {
+    "name": "Leśny Krąg",
+    "hero": "druid-tharnel",
+    "cards": {
+      "lesny-wilczek": 2,
+      "elfi-tropiciel": 2,
+      "dar-puszczy": 2,
+      "pnacze-straznicze": 2,
+      "druidka-gaju": 2,
+      "uscisk-korzeni": 2,
+      "pancerz-z-kory": 2,
+      "swiety-gaj": 2,
+      "dzik-puszczy": 2,
+      "lucznik-wiatru": 2,
+      "szept-lasu": 2,
+      "wilcza-wataha": 2,
+      "straznik-debu": 2,
+      "niedzwiedz-kniei": 2,
+      "matka-gaju": 1,
+      "pradawny-ent": 1
+    }
+  }
+}
