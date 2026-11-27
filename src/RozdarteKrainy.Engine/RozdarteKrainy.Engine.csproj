@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>RozdarteKrainy.Engine</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Data\cards.json" LogicalName="cards.json" />
+    <EmbeddedResource Include="Data\decks.json" LogicalName="decks.json" />
+  </ItemGroup>
+</Project>

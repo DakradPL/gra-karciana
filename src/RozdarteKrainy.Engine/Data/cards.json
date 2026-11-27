@@ -1,0 +1,503 @@
+[
+  {
+    "id": "kaplanka-ignara",
+    "name": "Kapłanka Ignara",
+    "faction": "FlameOrder",
+    "type": "Hero",
+    "rarity": "Legendary",
+    "cost": 0,
+    "heroPower": "FlameStrike",
+    "text": "Moc (2 Esencji, raz na turę): zadaj 1 obrażenie dowolnej jednostce albo Twierdzy. Przebudzenie: gdy wroga Twierdza ma 12 PŻ lub mniej, moc zadaje 2."
+  },
+  {
+    "id": "giermek-zakonu",
+    "name": "Giermek Zakonu",
+    "faction": "FlameOrder",
+    "type": "Unit",
+    "rarity": "Common",
+    "cost": 1,
+    "attack": 2,
+    "health": 1,
+    "keywords": [],
+    "text": ""
+  },
+  {
+    "id": "plomienny-zwiadowca",
+    "name": "Płomienny Zwiadowca",
+    "faction": "FlameOrder",
+    "type": "Unit",
+    "rarity": "Common",
+    "cost": 1,
+    "attack": 1,
+    "health": 1,
+    "keywords": [
+      "Charge"
+    ],
+    "text": "Szarża"
+  },
+  {
+    "id": "lucznik-zaru",
+    "name": "Łucznik Żaru",
+    "faction": "FlameOrder",
+    "type": "Unit",
+    "rarity": "Common",
+    "cost": 2,
+    "attack": 2,
+    "health": 1,
+    "keywords": [
+      "Ranged"
+    ],
+    "text": "Zasięg"
+  },
+  {
+    "id": "tarczownik-zakonu",
+    "name": "Tarczownik Zakonu",
+    "faction": "FlameOrder",
+    "type": "Unit",
+    "rarity": "Common",
+    "cost": 2,
+    "attack": 1,
+    "health": 4,
+    "keywords": [
+      "Guard"
+    ],
+    "text": "Straż"
+  },
+  {
+    "id": "iskra-gniewu",
+    "name": "Iskra Gniewu",
+    "faction": "FlameOrder",
+    "type": "Spell",
+    "rarity": "Common",
+    "cost": 1,
+    "onPlay": [
+      {
+        "type": "DamageUnit",
+        "amount": 2
+      }
+    ],
+    "text": "Zadaj 2 obrażenia wybranej jednostce."
+  },
+  {
+    "id": "sztandar-zakonu",
+    "name": "Sztandar Zakonu",
+    "faction": "FlameOrder",
+    "type": "Artifact",
+    "rarity": "Common",
+    "cost": 2,
+    "onPlay": [
+      {
+        "type": "BuffUnit",
+        "attack": 2
+      }
+    ],
+    "text": "Przypnij do jednostki. Ma +2 do ataku."
+  },
+  {
+    "id": "jezdziec-pozogi",
+    "name": "Jeździec Pożogi",
+    "faction": "FlameOrder",
+    "type": "Unit",
+    "rarity": "Rare",
+    "cost": 3,
+    "attack": 3,
+    "health": 2,
+    "keywords": [
+      "Charge"
+    ],
+    "text": "Szarża"
+  },
+  {
+    "id": "kaplan-ognia",
+    "name": "Kapłan Ognia",
+    "faction": "FlameOrder",
+    "type": "Unit",
+    "rarity": "Rare",
+    "cost": 3,
+    "attack": 2,
+    "health": 3,
+    "keywords": [],
+    "text": "Gdy wchodzi: zadaj 1 obrażenie wrogiej Twierdzy. Więź: zamiast tego 2.",
+    "onPlay": [
+      {
+        "type": "DamageEnemyFortress",
+        "amount": 1,
+        "bondAmount": 2
+      }
+    ]
+  },
+  {
+    "id": "straznik-bramy",
+    "name": "Strażnik Bramy",
+    "faction": "FlameOrder",
+    "type": "Unit",
+    "rarity": "Common",
+    "cost": 3,
+    "attack": 2,
+    "health": 4,
+    "keywords": [
+      "StoneWarden"
+    ],
+    "text": "Strażnik Kamienia"
+  },
+  {
+    "id": "wezwanie-do-szturmu",
+    "name": "Wezwanie do Szturmu",
+    "faction": "FlameOrder",
+    "type": "Spell",
+    "rarity": "Rare",
+    "cost": 3,
+    "onPlay": [
+      {
+        "type": "RallyAllUnits",
+        "attack": 1
+      }
+    ],
+    "text": "Twoje jednostki mają +1 do ataku do końca tury. Każdą możesz raz przesunąć za darmo."
+  },
+  {
+    "id": "pole-zgliszcz",
+    "name": "Pole Zgliszcz",
+    "faction": "FlameOrder",
+    "type": "Land",
+    "rarity": "Rare",
+    "cost": 2,
+    "onPlay": [],
+    "text": "W Świcie każdego gracza każda jednostka na tej ścieżce otrzymuje 1 obrażenie.",
+    "land": "Scorch"
+  },
+  {
+    "id": "ognista-fala",
+    "name": "Ognista Fala",
+    "faction": "FlameOrder",
+    "type": "Spell",
+    "rarity": "Epic",
+    "cost": 4,
+    "onPlay": [
+      {
+        "type": "DamageEnemiesInLane",
+        "amount": 2
+      }
+    ],
+    "text": "Zadaj 2 obrażenia każdej wrogiej jednostce na wybranej ścieżce."
+  },
+  {
+    "id": "paladyn-brzasku",
+    "name": "Paladyn Brzasku",
+    "faction": "FlameOrder",
+    "type": "Unit",
+    "rarity": "Rare",
+    "cost": 4,
+    "attack": 3,
+    "health": 5,
+    "keywords": [
+      "Guard"
+    ],
+    "text": "Straż"
+  },
+  {
+    "id": "taran-oblezniczy",
+    "name": "Taran Oblężniczy",
+    "faction": "FlameOrder",
+    "type": "Unit",
+    "rarity": "Epic",
+    "cost": 5,
+    "attack": 5,
+    "health": 4,
+    "keywords": [
+      "Pierce"
+    ],
+    "text": "Przebicie"
+  },
+  {
+    "id": "feniks-zakonu",
+    "name": "Feniks Zakonu",
+    "faction": "FlameOrder",
+    "type": "Unit",
+    "rarity": "Legendary",
+    "cost": 6,
+    "attack": 5,
+    "health": 5,
+    "keywords": [
+      "Charge"
+    ],
+    "text": "Szarża. Echo 4",
+    "echoCost": 4
+  },
+  {
+    "id": "arcymistrz-solen",
+    "name": "Arcymistrz Solen",
+    "faction": "FlameOrder",
+    "type": "Unit",
+    "rarity": "Legendary",
+    "cost": 7,
+    "attack": 6,
+    "health": 6,
+    "keywords": [],
+    "text": "Gdy wchodzi: zadaj 3 obrażenia wrogiej Twierdzy.",
+    "onPlay": [
+      {
+        "type": "DamageEnemyFortress",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "druid-tharnel",
+    "name": "Druid Tharnel",
+    "faction": "ForestCircle",
+    "type": "Hero",
+    "rarity": "Legendary",
+    "cost": 0,
+    "heroPower": "ForestBlessing",
+    "tokenId": "wilczek",
+    "text": "Moc (2 Esencji, raz na turę): wybrana twoja jednostka dostaje na stałe +1/+1. Przebudzenie: gdy kontrolujesz 2 Kamienie Mocy, moc dodatkowo kładzie żeton Wilczka (1/2)."
+  },
+  {
+    "id": "wilczek",
+    "name": "Wilczek",
+    "faction": "ForestCircle",
+    "type": "Unit",
+    "rarity": "Common",
+    "cost": 0,
+    "attack": 1,
+    "health": 2,
+    "keywords": [],
+    "text": "Żeton",
+    "isToken": true
+  },
+  {
+    "id": "lesny-wilczek",
+    "name": "Leśny Wilczek",
+    "faction": "ForestCircle",
+    "type": "Unit",
+    "rarity": "Common",
+    "cost": 1,
+    "attack": 1,
+    "health": 2,
+    "keywords": [],
+    "text": ""
+  },
+  {
+    "id": "elfi-tropiciel",
+    "name": "Elfi Tropiciel",
+    "faction": "ForestCircle",
+    "type": "Unit",
+    "rarity": "Common",
+    "cost": 1,
+    "attack": 1,
+    "health": 1,
+    "keywords": [
+      "Ranged"
+    ],
+    "text": "Zasięg"
+  },
+  {
+    "id": "dar-puszczy",
+    "name": "Dar Puszczy",
+    "faction": "ForestCircle",
+    "type": "Spell",
+    "rarity": "Common",
+    "cost": 1,
+    "onPlay": [
+      {
+        "type": "BuffUnit",
+        "attack": 1,
+        "health": 1
+      }
+    ],
+    "text": "Wybrana jednostka dostaje na stałe +1/+1."
+  },
+  {
+    "id": "pnacze-straznicze",
+    "name": "Pnącze Strażnicze",
+    "faction": "ForestCircle",
+    "type": "Unit",
+    "rarity": "Rare",
+    "cost": 2,
+    "attack": 0,
+    "health": 5,
+    "keywords": [
+      "Guard",
+      "StoneWarden"
+    ],
+    "text": "Straż, Strażnik Kamienia"
+  },
+  {
+    "id": "druidka-gaju",
+    "name": "Druidka Gaju",
+    "faction": "ForestCircle",
+    "type": "Unit",
+    "rarity": "Common",
+    "cost": 2,
+    "attack": 2,
+    "health": 2,
+    "keywords": [],
+    "text": "Gdy wchodzi: wylecz 3 PŻ jednostce albo swojej Twierdzy.",
+    "onPlay": [
+      {
+        "type": "HealUnitOrOwnFortress",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "uscisk-korzeni",
+    "name": "Uścisk Korzeni",
+    "faction": "ForestCircle",
+    "type": "Spell",
+    "rarity": "Common",
+    "cost": 2,
+    "onPlay": [
+      {
+        "type": "RootUnit"
+      }
+    ],
+    "text": "Wroga jednostka nie może atakować ani się przesuwać w następnej turze rywala."
+  },
+  {
+    "id": "pancerz-z-kory",
+    "name": "Pancerz z Kory",
+    "faction": "ForestCircle",
+    "type": "Artifact",
+    "rarity": "Common",
+    "cost": 2,
+    "onPlay": [
+      {
+        "type": "BuffUnit",
+        "health": 3,
+        "grantKeywords": [
+          "Guard"
+        ]
+      }
+    ],
+    "text": "Przypnij do jednostki. Ma +0/+3 i Straż."
+  },
+  {
+    "id": "swiety-gaj",
+    "name": "Święty Gaj",
+    "faction": "ForestCircle",
+    "type": "Land",
+    "rarity": "Rare",
+    "cost": 2,
+    "onPlay": [],
+    "text": "Wszystkie jednostki na tej ścieżce mają +0/+2.",
+    "land": "Grove"
+  },
+  {
+    "id": "dzik-puszczy",
+    "name": "Dzik Puszczy",
+    "faction": "ForestCircle",
+    "type": "Unit",
+    "rarity": "Common",
+    "cost": 3,
+    "attack": 3,
+    "health": 3,
+    "keywords": [],
+    "text": ""
+  },
+  {
+    "id": "lucznik-wiatru",
+    "name": "Łucznik Wiatru",
+    "faction": "ForestCircle",
+    "type": "Unit",
+    "rarity": "Rare",
+    "cost": 3,
+    "attack": 2,
+    "health": 3,
+    "keywords": [
+      "Ranged"
+    ],
+    "text": "Zasięg. Więź: ma +1 do ataku.",
+    "onPlay": [
+      {
+        "type": "BuffSelfIfBond",
+        "attack": 1
+      }
+    ]
+  },
+  {
+    "id": "szept-lasu",
+    "name": "Szept Lasu",
+    "faction": "ForestCircle",
+    "type": "Spell",
+    "rarity": "Epic",
+    "cost": 3,
+    "onPlay": [
+      {
+        "type": "RelocateEnemyUnitAndDraw"
+      }
+    ],
+    "text": "Przesuń wrogą jednostkę na wolne pole innej ścieżki po jej stronie. Dobierz kartę."
+  },
+  {
+    "id": "wilcza-wataha",
+    "name": "Wilcza Wataha",
+    "faction": "ForestCircle",
+    "type": "Spell",
+    "rarity": "Rare",
+    "cost": 4,
+    "onPlay": [
+      {
+        "type": "SummonTokens",
+        "amount": 2,
+        "tokenId": "wilczek"
+      }
+    ],
+    "text": "Połóż dwa żetony Wilczka (1/2) na swoich wolnych polach."
+  },
+  {
+    "id": "straznik-debu",
+    "name": "Strażnik Dębu",
+    "faction": "ForestCircle",
+    "type": "Unit",
+    "rarity": "Epic",
+    "cost": 4,
+    "attack": 3,
+    "health": 5,
+    "keywords": [],
+    "text": "W twoim Zmierzchu: jeśli kontrolujesz Kamień tej ścieżki, dostaje na stałe +1/+1.",
+    "trigger": "DuskGrowIfStoneHeld"
+  },
+  {
+    "id": "niedzwiedz-kniei",
+    "name": "Niedźwiedź Kniei",
+    "faction": "ForestCircle",
+    "type": "Unit",
+    "rarity": "Rare",
+    "cost": 5,
+    "attack": 5,
+    "health": 5,
+    "keywords": [],
+    "text": ""
+  },
+  {
+    "id": "matka-gaju",
+    "name": "Matka Gaju",
+    "faction": "ForestCircle",
+    "type": "Unit",
+    "rarity": "Legendary",
+    "cost": 5,
+    "attack": 3,
+    "health": 5,
+    "keywords": [],
+    "text": "W twoim Świcie: połóż żeton Wilczka (1/2) na wolnym polu tej ścieżki.",
+    "trigger": "DawnSummonTokenInLane",
+    "tokenId": "wilczek"
+  },
+  {
+    "id": "pradawny-ent",
+    "name": "Pradawny Ent",
+    "faction": "ForestCircle",
+    "type": "Unit",
+    "rarity": "Legendary",
+    "cost": 7,
+    "attack": 6,
+    "health": 8,
+    "keywords": [
+      "Guard",
+      "StoneWarden"
+    ],
+    "text": "Straż, Strażnik Kamienia"
+  }
+]
